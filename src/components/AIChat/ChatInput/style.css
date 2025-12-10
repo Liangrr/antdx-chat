@@ -1,0 +1,37 @@
+.chat-input-container {
+  padding: 16px;
+  background-color: #fff;
+  border-top: 1px solid #e8e8e8;
+}
+
+.chat-input-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.chat-input-textarea {
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.chat-input-textarea textarea {
+  padding: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.chat-input-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-input-counter {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.chat-input-counter .warning {
+  color: #ff4d4f;
+}
+
