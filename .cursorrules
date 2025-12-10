@@ -1,0 +1,537 @@
+# Ant Design X AI 聊天应用 - Cursor 开发规则
+
+## ⚠️ 重要：AI 助手行为规范
+
+### 禁止行为
+1. **禁止主动创建文档文件** - 除非用户明确要求，否则不要创建任何 .md、README、文档类文件
+2. **禁止生成冗长说明** - 回答要简洁直接，只提供必要的代码和简短说明
+3. **禁止过度解释** - 不要生成大段的使用说明、教程、指南等内容
+4. **禁止创建示例文件** - 不要创建 example.ts、demo.tsx 等示例文件
+
+### 推荐行为
+1. ✅ 直接修改或创建所需的代码文件
+2. ✅ 提供简短的一两句话说明变更内容
+3. ✅ 只在代码中添加必要的注释
+4. ✅ 遇到问题时简洁地询问用户需求
+
+### 回答风格
+- 简洁、直接、高效
+- 代码优先，说明其次
+- 一次性完成任务，不要分步骤冗长解释
+
+## 项目概述
+这是一个基于 Ant Design X 的 AI 聊天应用，采用 React 19 + TypeScript + Vite 构建，实现了类似 ChatGPT 的对话界面。
+
+## 技术栈
+- **前端框架**: React 19.2 + TypeScript 5.9
+- **构建工具**: Vite 6.x
+- **UI 组件库**: Ant Design 6.x + Ant Design X 2.1
+- **AI SDK**: @ant-design/x-sdk 2.1
+- **样式方案**: CSS Modules + antd-style
+- **Markdown**: @ant-design/x-markdown
+- **包管理器**: pnpm
+
+## 项目架构
+
+### 目录结构
+```
+src/
+├── components/AIChat/     # AI聊天相关组件
+│   ├── ChatMessage/       # 消息组件
+│   ├── ChatInput/         # 输入框组件
+│   ├── ChatContainer/     # 消息容器
+│   ├── Sidebar/           # 左侧边栏
+│   ├── WelcomePage/       # 欢迎页
+│   ├── GuidePanel/        # 右侧指南面板
+│   ├── ModelSelector/     # 模型选择器
+│   └── ChatHeader/        # 聊天头部
+├── pages/                 # 页面组件
+│   └── AIChatPage/        # AI聊天主页面
+├── services/              # API服务层
+├── hooks/                 # 自定义Hooks
+├── types/                 # TypeScript类型定义
+├── constants/             # 常量配置
+└── utils/                 # 工具函数
+```
+
+### 架构层次
+1. **组件层**: 可复用的UI组件
+2. **页面层**: 页面级组件，组合多个组件
+3. **业务逻辑层**: 自定义Hooks封装业务逻辑
+4. **服务层**: API调用和数据处理
+5. **工具层**: 通用工具函数
+
+## 编码规范
+
+### TypeScript 规范
+1. **严格模式**: 启用 strict mode，所有类型必须明确定义
+2. **类型优先**: 优先使用 interface 定义对象类型，type 用于联合类型和工具类型
+3. **避免 any**: 禁止使用 any，使用 unknown 或具体类型
+4. **类型导出**: 所有公共类型必须从 types/index.ts 统一导出
+5. **泛型使用**: 合理使用泛型提高代码复用性
+
+```typescript
+// ✅ 推荐
+interface Message {
+  id: string;
+  content: string;
+  role: 'user' | 'assistant';
+  timestamp: number;
+}
+
+// ❌ 避免
+const message: any = { ... };
+```
+
+### React 组件规范
+1. **函数组件**: 统一使用函数组件 + Hooks
+2. **组件命名**: PascalCase，文件名与组件名一致
+3. **Props 接口**: 每个组件必须定义 Props 接口
+4. **导出方式**: 使用命名导出 + 默认导出
+
+```typescript
+// ✅ 推荐的组件结构
+/**
+ * 聊天消息组件
+ * 用于展示单条用户或AI的消息
+ */
+import React from 'react';
+import type { Message } from '@/types';
+import './style.css';
+
+interface ChatMessageProps {
+  message: Message;
+  onRetry?: () => void;
+  onDelete?: () => void;
+}
+
+export const ChatMessage: React.FC<ChatMessageProps> = ({ 
+  message, 
+  onRetry, 
+  onDelete 
+}) => {
+  // 组件逻辑
+  return (
+    <div className="chat-message">
+      {/* JSX */}
+    </div>
+  );
+};
+
+export default ChatMessage;
+```
+
+### 文件命名规范
+- **组件文件**: PascalCase，如 `ChatMessage/index.tsx`
+- **工具文件**: camelCase，如 `chatUtils.ts`
+- **类型文件**: camelCase，如 `chat.ts`
+- **样式文件**: `style.css` 或与组件同名
+- **常量文件**: camelCase，如 `models.ts`
+
+### 导入顺序
+```typescript
+// 1. React 相关
+import React, { useState, useEffect } from 'react';
+
+// 2. 第三方库
+import { Button, Input } from 'antd';
+import { Bubble, Sender } from '@ant-design/x';
+
+// 3. 项目内部模块（使用 @ 别名）
+import { useChat } from '@/hooks';
+import { chatService } from '@/services';
+import { Message } from '@/types';
+
+// 4. 样式文件
+import './style.css';
+```
+
+### 路径别名
+使用 `@` 作为 `src` 目录的别名：
+
+```typescript
+// ✅ 推荐
+import { useChat } from '@/hooks';
+import type { Message } from '@/types';
+
+// ❌ 避免
+import { useChat } from '../../hooks';
+import type { Message } from '../../types';
+```
+
+## 组件开发规范
+
+### 组件结构
+每个组件目录包含：
+- `index.tsx`: 组件逻辑
+- `style.css`: 组件样式
+- 必要时可添加 `types.ts`, `utils.ts` 等
+
+### 组件职责
+1. **单一职责**: 每个组件只负责一个功能
+2. **Props 传递**: 通过 props 传递数据和回调
+3. **状态提升**: 共享状态提升到父组件或使用 Context
+4. **样式隔离**: 使用 CSS Modules 或 BEM 命名避免样式冲突
+
+### Hooks 使用规范
+1. **自定义 Hooks**: 封装可复用的逻辑，以 `use` 开头
+2. **依赖数组**: 正确声明 useEffect/useCallback 的依赖
+3. **性能优化**: 合理使用 useMemo、useCallback
+4. **Hooks 顺序**: 保持 Hooks 调用顺序一致
+
+```typescript
+// ✅ 推荐的自定义 Hook
+export const useChat = (sessionId: string) => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const sendMessage = useCallback(async (content: string) => {
+    setIsLoading(true);
+    try {
+      const response = await chatService.sendMessage(content);
+      setMessages(prev => [...prev, response]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  return { messages, isLoading, sendMessage };
+};
+```
+
+## 样式规范
+
+### CSS 规范
+1. **类名命名**: 使用 kebab-case 或 BEM 命名法
+2. **样式隔离**: 每个组件独立样式文件
+3. **响应式**: 使用媒体查询适配不同屏幕
+4. **变量使用**: 使用 CSS 变量定义主题色
+
+```css
+/* ✅ 推荐的样式结构 */
+.chat-message {
+  display: flex;
+  padding: 16px;
+  gap: 12px;
+}
+
+.chat-message__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.chat-message__content {
+  flex: 1;
+  line-height: 1.6;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .chat-message {
+    padding: 12px;
+  }
+}
+```
+
+### 设计规范
+- **主色调**: #1890ff（蓝色）
+- **圆角**: 4px/8px/12px
+- **间距**: 4px/8px/12px/16px/24px
+- **阴影**: 0 2px 8px rgba(0, 0, 0, 0.08)
+- **过渡**: all 0.3s
+
+## API 和数据处理
+
+### Service 层规范
+1. **统一封装**: 所有 API 调用在 services 目录
+2. **错误处理**: 统一的错误处理机制
+3. **类型安全**: 请求和响应都要定义类型
+4. **超时控制**: 设置合理的请求超时时间
+
+```typescript
+// ✅ 推荐的 Service 结构
+import { httpClient } from '@/utils/request';
+import type { ChatRequest, ChatResponse } from '@/types';
+
+export const chatService = {
+  /**
+   * 发送聊天消息
+   */
+  async sendMessage(request: ChatRequest): Promise<ChatResponse> {
+    try {
+      return await httpClient.post<ChatResponse>('/chat/completions', request);
+    } catch (error) {
+      console.error('发送消息失败:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * 获取对话历史
+   */
+  async getHistory(sessionId: string): Promise<Message[]> {
+    return await httpClient.get<Message[]>(`/chat/history/${sessionId}`);
+  },
+};
+```
+
+### 数据流规范
+1. **单向数据流**: 数据从父组件流向子组件
+2. **状态管理**: 简单状态用 useState，复杂状态考虑 Context 或状态管理库
+3. **异步处理**: 使用 async/await，避免回调地狱
+4. **错误边界**: 添加错误边界组件捕获异常
+
+## Ant Design X 使用规范
+
+### 核心组件
+1. **Bubble**: 消息气泡组件，用于展示对话消息
+2. **Sender**: 输入框组件，支持附件、语音等
+3. **Conversations**: 对话列表组件
+4. **Prompts**: 提示词组件
+5. **Welcome**: 欢迎页组件
+6. **Attachments**: 附件上传组件
+
+### Hooks
+1. **useXChat**: 聊天功能 Hook，管理消息和请求
+2. **useXConversations**: 会话管理 Hook
+3. **useXAgent**: Agent 功能 Hook
+
+### Provider 配置
+```typescript
+import { DeepSeekChatProvider, XRequest } from '@ant-design/x-sdk';
+
+export const providerFactory = (conversationKey: string) => {
+  return new DeepSeekChatProvider({
+    request: XRequest(
+      'YOUR_API_ENDPOINT',
+      {
+        manual: true,
+        params: {
+          stream: true,
+          model: 'YOUR_MODEL',
+        },
+      },
+    ),
+  });
+};
+```
+
+## 性能优化
+
+### 优化策略
+1. **代码分割**: 使用 React.lazy 和 Suspense 懒加载组件
+2. **虚拟滚动**: 大量消息时使用虚拟滚动
+3. **防抖节流**: 输入框、搜索等使用防抖
+4. **Memo 优化**: 使用 React.memo 避免不必要的重渲染
+5. **图片优化**: 使用 WebP 格式，添加懒加载
+
+```typescript
+// ✅ 推荐的性能优化
+import React, { memo, useMemo, useCallback } from 'react';
+
+export const ChatMessage = memo<ChatMessageProps>(({ message }) => {
+  // 使用 useMemo 缓存计算结果
+  const formattedTime = useMemo(() => {
+    return formatTime(message.timestamp);
+  }, [message.timestamp]);
+
+  // 使用 useCallback 缓存回调函数
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(message.content);
+  }, [message.content]);
+
+  return <div>{/* ... */}</div>;
+});
+```
+
+## 错误处理
+
+### 错误处理规范
+1. **边界处理**: 使用 ErrorBoundary 捕获组件错误
+2. **友好提示**: 显示用户友好的错误信息
+3. **日志记录**: 记录错误日志便于调试
+4. **降级方案**: 提供错误时的降级 UI
+
+```typescript
+// ✅ 推荐的错误处理
+try {
+  const response = await chatService.sendMessage(content);
+  setMessages(prev => [...prev, response]);
+} catch (error) {
+  console.error('发送消息失败:', error);
+  message.error('发送失败，请重试');
+  // 可选：上报错误到监控系统
+}
+```
+
+## 测试规范
+
+### 测试要求
+1. **单元测试**: 工具函数必须有单元测试
+2. **组件测试**: 核心组件需要测试
+3. **集成测试**: 关键流程需要集成测试
+4. **覆盖率**: 核心代码覆盖率 > 80%
+
+## Git 提交规范
+
+### Commit Message 格式
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### Type 类型
+- `feat`: 新功能
+- `fix`: 修复 bug
+- `docs`: 文档更新
+- `style`: 代码格式调整
+- `refactor`: 重构代码
+- `perf`: 性能优化
+- `test`: 测试相关
+- `chore`: 构建/工具相关
+
+### 示例
+```
+feat(chat): 添加消息重试功能
+
+- 添加重试按钮
+- 实现重试逻辑
+- 添加加载状态
+
+Closes #123
+```
+
+## 注释规范
+
+### 注释要求
+1. **组件注释**: 每个组件顶部添加 JSDoc 注释
+2. **函数注释**: 复杂函数添加说明和参数描述
+3. **业务逻辑**: 复杂业务逻辑添加注释说明
+4. **TODO 标记**: 待完成功能使用 TODO 标记
+
+```typescript
+/**
+ * 聊天消息组件
+ * 
+ * @description 用于展示单条用户或AI的消息，支持重试、删除、复制等操作
+ * @author Your Name
+ * @date 2024-01-01
+ */
+export const ChatMessage: React.FC<ChatMessageProps> = (props) => {
+  // TODO: 添加消息编辑功能
+  
+  /**
+   * 处理消息重试
+   * 重新发送失败的消息
+   */
+  const handleRetry = async () => {
+    // 实现逻辑
+  };
+
+  return <div>{/* ... */}</div>;
+};
+```
+
+## 最佳实践
+
+### 开发建议
+1. **渐进增强**: 先实现核心功能，再添加增强功能
+2. **代码复用**: 提取公共逻辑到 hooks 和 utils
+3. **类型安全**: 充分利用 TypeScript 的类型系统
+4. **可维护性**: 保持代码简洁，单个文件不超过 300 行
+5. **可测试性**: 编写易于测试的代码
+6. **文档完善**: 重要功能添加文档说明
+
+### 避免的做法
+1. ❌ 不要在组件中直接调用 API
+2. ❌ 不要使用内联样式（除非必要）
+3. ❌ 不要在循环中使用 index 作为 key
+4. ❌ 不要过度优化（先保证功能正确）
+5. ❌ 不要忽略 TypeScript 类型错误
+6. ❌ 不要提交未格式化的代码
+7. ❌ 不要主动生成文档、README、说明文件
+8. ❌ 不要提供冗长的使用教程和步骤说明
+
+## 开发流程
+
+### 新功能开发
+1. 创建功能分支：`git checkout -b feat/feature-name`
+2. 定义类型和接口
+3. 实现组件/功能
+4. 编写样式
+5. 添加错误处理
+6. 测试功能
+7. 提交代码并创建 PR
+
+### 代码审查要点
+- 类型定义是否完整
+- 组件职责是否单一
+- 是否有性能问题
+- 错误处理是否完善
+- 代码是否符合规范
+- 是否有充分的注释
+
+## 常用命令
+
+```bash
+# 安装依赖
+pnpm install
+
+# 启动开发服务器
+pnpm dev
+
+# 构建生产版本
+pnpm build
+
+# 预览生产版本
+pnpm preview
+
+# 代码检查
+pnpm lint
+
+# 类型检查
+pnpm type-check
+```
+
+## 资源链接
+
+- [Ant Design](https://ant.design/)
+- [Ant Design X](https://x.ant.design/)
+- [React 文档](https://react.dev/)
+- [TypeScript 文档](https://www.typescriptlang.org/)
+- [Vite 文档](https://vitejs.dev/)
+
+## 项目特色
+
+### 三栏式布局
+- 左侧：对话历史列表
+- 中间：聊天主内容区
+- 右侧：设计指南面板
+
+### 核心功能
+- ✅ 多会话管理
+- ✅ 流式响应
+- ✅ Markdown 渲染
+- ✅ 代码高亮
+- ✅ 消息操作（重试、删除、复制）
+- ✅ 附件上传
+- ✅ 语音输入
+- ✅ 热门话题
+- ✅ 设计指南
+
+## 注意事项
+
+1. **API 配置**: 当前使用演示 API，生产环境需替换为自己的 API
+2. **数据安全**: 不要在客户端暴露 API Key
+3. **性能优化**: 大量消息时注意性能优化
+4. **移动端适配**: 当前主要针对桌面端，移动端需额外优化
+5. **错误处理**: 完善网络错误、超时等异常处理
+
+---
+
+**遵循以上规范，保持代码质量和项目可维护性！**
+
