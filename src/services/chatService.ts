@@ -4,17 +4,29 @@
 
 import type { ChatRequest, ChatResponse } from '@/types';
 
+// Python后端API地址
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
 class ChatService {
   /**
    * 发送聊天消息
    */
   async sendMessage(request: ChatRequest): Promise<ChatResponse> {
     try {
-      // 这里是模拟API调用，实际项目中需要替换为真实的API端点
-      // return await httpClient.post<ChatResponse>('/chat/completions', request);
+      const response = await fetch(`${API_BASE_URL}/api/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
 
-      // 模拟API响应
-      return await this.mockSendMessage(request);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to send message');
+      }
+
+      return await response.json();
     } catch (error) {
       console.error('Send message error:', error);
       throw error;
@@ -28,24 +40,59 @@ class ChatService {
     request: ChatRequest
   ): AsyncGenerator<string, void, unknown> {
     try {
-      // 实际项目中使用真实的流式API
-      // const response = await fetch('/api/chat/stream', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(request),
-      // });
-      //
-      // const reader = response.body?.getReader();
-      // const decoder = new TextDecoder();
-      //
-      // while (true) {
-      //   const { done, value } = await reader!.read();
-      //   if (done) break;
-      //   yield decoder.decode(value);
-      // }
+      const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
 
-      // 模拟流式响应
-      yield* this.mockStreamResponse(request);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to start stream');
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('Response body is not readable');
+      }
+
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          
+          if (trimmedLine.startsWith('data:')) {
+            const data = trimmedLine.slice(5).trim();
+            
+            if (data === '[DONE]') {
+              return;
+            }
+
+            if (data) {
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.content) {
+                  yield parsed.content;
+                }
+              } catch (e) {
+                console.warn('Failed to parse SSE data:', data);
+              }
+            }
+          }
+        }
+      }
     } catch (error) {
       console.error('Stream message error:', error);
       throw error;
