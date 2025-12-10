@@ -10,16 +10,25 @@ antdx-demo/
 │   │       ├── ChatMessage/      # 聊天消息组件
 │   │       │   ├── index.tsx
 │   │       │   └── style.css
-│   │       ├── ChatInput/        # 输入框组件
+│   │       ├── ChatInput/        # 输入框组件（增强版）
+│   │       │   ├── index.tsx
+│   │       │   └── style.css
+│   │       ├── ChatContainer/    # 聊天容器组件
+│   │       │   ├── index.tsx
+│   │       │   └── style.css
+│   │       ├── Sidebar/          # 左侧边栏（会话列表）
+│   │       │   ├── index.tsx
+│   │       │   └── style.css
+│   │       ├── WelcomePage/      # 欢迎页（热门话题）
+│   │       │   ├── index.tsx
+│   │       │   └── style.css
+│   │       ├── GuidePanel/       # 右侧指南面板
 │   │       │   ├── index.tsx
 │   │       │   └── style.css
 │   │       ├── ModelSelector/    # 模型选择器组件
 │   │       │   ├── index.tsx
 │   │       │   └── style.css
 │   │       ├── ChatHeader/       # 聊天头部组件
-│   │       │   ├── index.tsx
-│   │       │   └── style.css
-│   │       ├── ChatContainer/    # 聊天容器组件
 │   │       │   ├── index.tsx
 │   │       │   └── style.css
 │   │       └── index.ts          # 组件统一导出
@@ -36,6 +45,7 @@ antdx-demo/
 │   │
 │   ├── hooks/              # 自定义Hooks
 │   │   ├── useChat.ts      # 聊天功能Hook
+│   │   ├── useSession.ts   # 会话管理Hook
 │   │   └── index.ts
 │   │
 │   ├── types/              # TypeScript类型定义
@@ -66,14 +76,17 @@ antdx-demo/
 ## 🏗️ 架构设计
 
 ### 1. 组件层（Components）
+- **Sidebar**: 左侧边栏，显示对话历史列表，支持新建、删除、重命名
+- **WelcomePage**: 欢迎页，显示热门话题卡片
+- **GuidePanel**: 右侧指南面板，展示设计指南
 - **ChatMessage**: 单条消息展示，支持用户/AI消息样式区分
-- **ChatInput**: 消息输入框，支持多行输入、发送、停止等功能
-- **ModelSelector**: AI模型选择器，支持切换不同模型
-- **ChatHeader**: 页面头部，显示标题和消息统计
+- **ChatInput**: 增强版输入框，带工具栏（升级、组件、RICH指南等）
 - **ChatContainer**: 消息容器，负责消息列表展示和滚动
+- **ModelSelector**: AI模型选择器（可选）
+- **ChatHeader**: 聊天头部组件（可选）
 
 ### 2. 页面层（Pages）
-- **AIChatPage**: AI聊天主页面，整合所有组件
+- **AIChatPage**: AI聊天主页面，三栏布局（侧边栏+主内容+指南面板）
 
 ### 3. 业务逻辑层（Hooks）
 - **useChat**: 封装聊天核心逻辑
@@ -82,6 +95,11 @@ antdx-demo/
   - 消息删除
   - 清空对话
   - 停止生成
+- **useSession**: 封装会话管理逻辑
+  - 创建会话
+  - 更新会话
+  - 删除会话
+  - 会话持久化
 
 ### 4. 服务层（Services）
 - **chatService**: AI聊天API服务
@@ -135,27 +153,29 @@ pnpm preview
 ## 📝 功能特性
 
 ### 已实现功能
+- ✅ 三栏式布局（侧边栏+主内容+指南面板）
+- ✅ 对话历史管理（新建、删除、重命名）
+- ✅ 会话持久化存储
+- ✅ 欢迎页与热门话题
 - ✅ 实时对话（模拟流式响应）
-- ✅ 多模型切换
-- ✅ 消息重发
-- ✅ 消息删除
-- ✅ 清空对话
-- ✅ 停止生成
-- ✅ 消息复制
+- ✅ 消息重发、删除、复制
+- ✅ 打字机效果
+- ✅ 增强版输入框（工具栏、附件、语音）
+- ✅ 设计指南面板
 - ✅ 错误处理
 - ✅ 响应式设计
-- ✅ 打字机效果
 
 ### 待扩展功能
-- ⬜ 对话历史持久化
-- ⬜ 多会话管理
 - ⬜ 导出对话记录
-- ⬜ 语音输入
-- ⬜ 文件上传
+- ⬜ 语音输入功能实现
+- ⬜ 文件上传功能实现
 - ⬜ Markdown渲染
 - ⬜ 代码高亮
 - ⬜ 主题切换（暗色模式）
 - ⬜ 国际化支持
+- ⬜ 移动端抽屉式侧边栏
+- ⬜ 搜索对话历史
+- ⬜ 对话分组/标签
 
 ## 🔧 配置说明
 

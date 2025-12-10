@@ -7,4 +7,8 @@ export { ChatInput } from './ChatInput';
 export { ModelSelector } from './ModelSelector';
 export { ChatHeader } from './ChatHeader';
 export { ChatContainer } from './ChatContainer';
+export { Sidebar } from './Sidebar';
+export { WelcomePage } from './WelcomePage';
+export { GuidePanel } from './GuidePanel';
+export { EmptyState } from './EmptyState';
 

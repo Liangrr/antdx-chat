@@ -6,8 +6,11 @@ import React, { useState, useRef, KeyboardEvent } from 'react';
 import { Input, Button, Space, Tooltip } from 'antd';
 import {
   SendOutlined,
-  StopOutlined,
-  ClearOutlined,
+  PaperClipOutlined,
+  RocketOutlined,
+  FileTextOutlined,
+  SafetyOutlined,
+  AudioOutlined,
 } from '@ant-design/icons';
 import './style.css';
 
@@ -15,8 +18,6 @@ const { TextArea } = Input;
 
 interface ChatInputProps {
   onSend: (message: string) => void;
-  onStop?: () => void;
-  onClear?: () => void;
   isLoading?: boolean;
   placeholder?: string;
   maxLength?: number;
@@ -24,10 +25,8 @@ interface ChatInputProps {
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   onSend,
-  onStop,
-  onClear,
   isLoading = false,
-  placeholder = '输入消息... (Shift + Enter 换行，Enter 发送)',
+  placeholder = '提问或输入 / 使用指令',
   maxLength = 2000,
 }) => {
   const [value, setValue] = useState('');
@@ -56,67 +55,70 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
-  const handleClear = () => {
-    if (window.confirm('确定要清空所有对话吗？')) {
-      onClear?.();
-      setValue('');
-    }
-  };
-
   return (
     <div className="chat-input-container">
+      <div className="chat-input-toolbar">
+        <Space size="small">
+          <Tooltip title="升级">
+            <Button type="text" icon={<RocketOutlined />} size="small">
+              升级
+            </Button>
+          </Tooltip>
+          <Tooltip title="组件">
+            <Button type="text" icon={<FileTextOutlined />} size="small">
+              组件
+            </Button>
+          </Tooltip>
+          <Tooltip title="RICH 指南">
+            <Button type="text" icon={<SafetyOutlined />} size="small">
+              RICH 指南
+            </Button>
+          </Tooltip>
+          <Tooltip title="安全介绍">
+            <Button type="text" icon={<SafetyOutlined />} size="small">
+              安全介绍
+            </Button>
+          </Tooltip>
+        </Space>
+      </div>
+
       <div className="chat-input-wrapper">
-        <TextArea
-          ref={textAreaRef}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          autoSize={{ minRows: 1, maxRows: 6 }}
-          maxLength={maxLength}
-          disabled={isLoading}
-          className="chat-input-textarea"
-        />
-
-        <div className="chat-input-footer">
-          <div className="chat-input-counter">
-            <span className={value.length > maxLength * 0.9 ? 'warning' : ''}>
-              {value.length} / {maxLength}
-            </span>
+        <div className="chat-input-main">
+          <Button
+            type="text"
+            icon={<PaperClipOutlined />}
+            className="chat-input-attach"
+          />
+          <TextArea
+            ref={textAreaRef}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            autoSize={{ minRows: 1, maxRows: 4 }}
+            maxLength={maxLength}
+            disabled={isLoading}
+            className="chat-input-textarea"
+            bordered={false}
+          />
+          <div className="chat-input-actions">
+            <Tooltip title="语音输入">
+              <Button
+                type="text"
+                icon={<AudioOutlined />}
+                size="small"
+                className="chat-input-voice"
+              />
+            </Tooltip>
+            <Button
+              type="primary"
+              icon={<SendOutlined />}
+              onClick={handleSend}
+              disabled={!value.trim() || isLoading}
+              className="chat-input-send"
+              shape="circle"
+            />
           </div>
-
-          <Space>
-            {onClear && (
-              <Tooltip title="清空对话">
-                <Button
-                  type="text"
-                  icon={<ClearOutlined />}
-                  onClick={handleClear}
-                  disabled={isLoading}
-                />
-              </Tooltip>
-            )}
-
-            {isLoading ? (
-              <Button
-                type="primary"
-                danger
-                icon={<StopOutlined />}
-                onClick={onStop}
-              >
-                停止
-              </Button>
-            ) : (
-              <Button
-                type="primary"
-                icon={<SendOutlined />}
-                onClick={handleSend}
-                disabled={!value.trim()}
-              >
-                发送
-              </Button>
-            )}
-          </Space>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 .chat-message {
   display: flex;
-  gap: 12px;
-  padding: 16px;
+  gap: 16px;
+  padding: 20px 0;
   transition: background-color 0.2s;
 }
 
@@ -10,7 +10,7 @@
 }
 
 .chat-message-user {
-  background-color: #f5f5f5;
+  background-color: transparent;
 }
 
 .chat-message-avatar {
@@ -26,25 +26,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .chat-message-body {
-  padding: 12px 16px;
-  background-color: #fff;
-  border-radius: 8px;
-  border: 1px solid #e8e8e8;
-  margin-bottom: 8px;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  margin-bottom: 12px;
+  line-height: 1.8;
 }
 
 .chat-message-user .chat-message-body {
-  background-color: #e6f7ff;
-  border-color: #91d5ff;
+  background-color: transparent;
+  border: none;
 }
 
 .chat-message-error {
-  background-color: #fff2f0 !important;
-  border-color: #ffccc7 !important;
+  color: #ff4d4f;
 }
 
 .chat-message-error-info {
@@ -52,14 +51,15 @@
   align-items: center;
   gap: 8px;
   margin-top: 8px;
-  padding: 8px;
-  background-color: #fff;
-  border-radius: 4px;
+  padding: 12px;
+  background-color: #fff2f0;
+  border-radius: 8px;
+  border: 1px solid #ffccc7;
 }
 
 .chat-message-actions {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   opacity: 0;
   transition: opacity 0.2s;
 }

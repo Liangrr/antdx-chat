@@ -3,4 +3,5 @@
  */
 
 export * from './useChat';
+export * from './useSession';
 

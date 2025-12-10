@@ -1,0 +1,78 @@
+.guide-panel {
+  width: 300px;
+  height: 100%;
+  padding: 20px 16px;
+  background-color: #fff;
+  border-left: 1px solid #f0f0f0;
+  overflow-y: auto;
+}
+
+.guide-card {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f0f5ff 0%, #e6f7ff 100%);
+  border: 1px solid #d6e4ff;
+  box-shadow: none;
+}
+
+.guide-card .ant-card-body {
+  padding: 20px;
+}
+
+.guide-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.guide-item:hover {
+  border-color: #d6e4ff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
+}
+
+.guide-item-icon {
+  font-size: 18px;
+  color: #1890ff;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guide-item-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.guide-item-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #8c8c8c;
+}
+
+/* 滚动条样式 */
+.guide-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.guide-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.guide-panel::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.guide-panel::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
