@@ -153,9 +153,14 @@ class ChatService {
    */
   async getModels() {
     try {
-      // return await httpClient.get('/models');
-      // 模拟返回
-      return [];
+      const response = await fetch(`${API_BASE_URL}/api/models`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch models');
+      }
+      
+      const data = await response.json();
+      return data.models || [];
     } catch (error) {
       console.error('Get models error:', error);
       throw error;
