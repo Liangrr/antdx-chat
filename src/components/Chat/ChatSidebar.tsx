@@ -9,7 +9,7 @@ import { Conversations } from '@ant-design/x';
 import type { MessageInstance } from 'antd/es/message/interface';
 import { createStyles } from 'antd-style';
 import dayjs from 'dayjs';
-import locale from '../_utils/local';
+import locale from '@/locales/zh-CN';
 
 const useStyle = createStyles(({ token, css }) => ({
   side: css`

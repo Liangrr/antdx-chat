@@ -8,8 +8,8 @@ import { PaperClipOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import { Sender, Prompts, Attachments } from '@ant-design/x';
 import type { GetProp } from 'antd';
 import { createStyles } from 'antd-style';
-import { SENDER_PROMPTS } from '../constants/index';
-import locale from '../_utils/local';
+import { SENDER_PROMPTS } from '@/constants/chat';
+import locale from '@/locales/zh-CN';
 
 const useStyle = createStyles(({ token, css }) => ({
   sender: css`

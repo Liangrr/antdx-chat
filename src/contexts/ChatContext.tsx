@@ -4,7 +4,7 @@
 
 import React from 'react';
 import type { useXChat } from '@ant-design/x-sdk';
-import type { ChatMessage } from '../types';
+import type { ChatMessage } from '@/types/chat';
 
 export const ChatContext = React.createContext<{
   onReload?: ReturnType<typeof useXChat>['onReload'];

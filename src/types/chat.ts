@@ -2,6 +2,9 @@
  * 聊天相关类型定义
  */
 
+import type { ActionsFeedbackProps } from '@ant-design/x';
+import type { XModelMessage } from '@ant-design/x-sdk';
+
 // 消息角色类型
 export type MessageRole = 'user' | 'assistant' | 'system';
 
@@ -69,3 +72,9 @@ export interface ChatConfig {
   systemPrompt?: string;
 }
 
+// Ant Design X 扩展的消息类型
+export interface ChatMessage extends XModelMessage {
+  extraInfo?: {
+    feedback: ActionsFeedbackProps['value'];
+  };
+}

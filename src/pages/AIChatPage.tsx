@@ -11,16 +11,14 @@ import { createStyles } from 'antd-style';
 import '@ant-design/x-markdown/themes/light.css';
 import '@ant-design/x-markdown/themes/dark.css';
 
-import { ChatSidebar } from './components/ChatSidebar';
-import { ChatSender } from './components/ChatSender';
-import { ChatContext } from './context/ChatContext';
-import { providerFactory, historyMessageFactory, getRole } from './utils/chatUtils';
-import { DEFAULT_CONVERSATIONS_ITEMS, HOT_TOPICS, DESIGN_GUIDE } from './constants/index';
-import { useMarkdownTheme } from '../x-markdown/demo/_utils';
-import locale from './_utils/local';
-import type { ChatMessage } from './types';
-
-import './style.css';
+import { ChatSidebar } from '@/components/Chat/ChatSidebar';
+import { ChatSender } from '@/components/Chat/ChatSender';
+import { ChatContext } from '@/contexts/ChatContext';
+import { providerFactory, historyMessageFactory, getRole } from '@/utils/chat';
+import { DEFAULT_CONVERSATIONS_ITEMS, HOT_TOPICS, DESIGN_GUIDE } from '@/constants/chat';
+import { useMarkdownTheme } from '@/utils/markdown';
+import locale from '@/locales/zh-CN';
+import type { ChatMessage } from '@/types/chat';
 
 // ==================== Style ====================
 const useStyle = createStyles(({ token, css }) => {
@@ -229,3 +227,4 @@ const AIChatPage: React.FC = () => {
 };
 
 export default AIChatPage;
+

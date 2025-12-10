@@ -11,9 +11,9 @@ import XMarkdown from '@ant-design/x-markdown';
 import { DeepSeekChatProvider, XRequest } from '@ant-design/x-sdk';
 import type { DefaultMessageInfo, useXChat, SSEFields, XModelParams, XModelResponse } from '@ant-design/x-sdk';
 
-import { HISTORY_MESSAGES, THOUGHT_CHAIN_CONFIG } from '../constants/index';
-import locale from '../_utils/local';
-import type { ChatMessage } from '../types';
+import { HISTORY_MESSAGES, THOUGHT_CHAIN_CONFIG } from '@/constants/chat';
+import locale from '@/locales/zh-CN';
+import type { ChatMessage } from '@/types/chat';
 
 // Provider 缓存
 const providerCaches = new Map<string, DeepSeekChatProvider>();

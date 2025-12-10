@@ -16,8 +16,8 @@ import {
 import type { Prompts } from '@ant-design/x';
 import type { GetProp } from 'antd';
 import type { DefaultMessageInfo } from '@ant-design/x-sdk';
-import locale from '../_utils/local';
-import type { ChatMessage } from '../types';
+import locale from '@/locales/zh-CN';
+import type { ChatMessage } from '@/types/chat';
 
 // 历史消息
 export const HISTORY_MESSAGES: {
