@@ -2,7 +2,8 @@
  * 聊天输入组件
  */
 
-import React, { useState, useRef, KeyboardEvent } from 'react';
+import React, { useState, useRef } from 'react';
+import type { KeyboardEvent } from 'react';
 import { Input, Button, Space, Tooltip } from 'antd';
 import {
   SendOutlined,

@@ -3,7 +3,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { Spin, Button, Space, Typography } from 'antd';
+import { Button, Space, Typography } from 'antd';
 import { StopOutlined, ReloadOutlined, CopyOutlined, LikeOutlined, DislikeOutlined } from '@ant-design/icons';
 import type { Message } from '@/types';
 import { ChatMessage } from '../ChatMessage';

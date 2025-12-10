@@ -1,51 +1,25 @@
-.ai-chat-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: row;
-  background-color: #fff;
+/**
+ * AI聊天页面样式
+ */
+
+/* 全局样式重置 */
+.ant-bubble-content-updating {
+  background-image: linear-gradient(90deg, #ff6b23 0%, #af3cb8 31%, #53b6ff 89%);
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-position: bottom;
 }
 
-.ai-chat-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+/* 提示词样式 */
+.ant-prompts-label {
+  color: #000000e0 !important;
 }
 
-.ai-chat-header {
-  height: 64px;
-  padding: 0 24px;
-  background-color: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  line-height: 64px;
+.ant-prompts-desc {
+  color: #000000a6 !important;
+  width: 100%;
 }
 
-.ai-chat-help-btn {
-  font-size: 14px;
-  color: #595959;
+.ant-prompts-icon {
+  color: #000000a6 !important;
 }
-
-.ai-chat-content {
-  flex: 1;
-  overflow-y: auto;
-  background-color: #fff;
-}
-
-/* 响应式设计 */
-@media (max-width: 1024px) {
-  .ai-chat-page {
-    /* 在中等屏幕上隐藏右侧面板 */
-  }
-}
-
-@media (max-width: 768px) {
-  .ai-chat-page {
-    height: 100dvh; /* 移动端使用动态视口高度 */
-  }
-
-  /* 在小屏幕上可以考虑隐藏侧边栏，使用抽屉模式 */
-}
-

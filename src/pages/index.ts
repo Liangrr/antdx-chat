@@ -2,5 +2,5 @@
  * 页面统一导出
  */
 
-export { AIChatPage } from './AIChatPage';
+export { default as AIChatPage } from './AIChatPage';
 

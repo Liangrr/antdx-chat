@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Button, Typography, Menu, Dropdown, Avatar } from 'antd';
+import { Button, Typography, Dropdown, Avatar } from 'antd';
 import { PlusOutlined, MessageOutlined, MoreOutlined, DeleteOutlined, EditOutlined, UserOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import type { ChatSession } from '@/types';
 import './style.css';

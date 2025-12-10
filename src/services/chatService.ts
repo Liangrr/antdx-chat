@@ -2,8 +2,7 @@
  * AI聊天服务
  */
 
-import type { ChatRequest, ChatResponse, Message } from '@/types';
-import { httpClient } from '@/utils';
+import type { ChatRequest, ChatResponse } from '@/types';
 
 class ChatService {
   /**
