@@ -2,14 +2,15 @@
  * 聊天侧边栏组件
  */
 
-import React from 'react';
-import { Avatar, Button } from 'antd';
+import React, { useMemo, useState } from 'react';
+import { Avatar, Button, Input, Modal, Typography } from 'antd';
 import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Conversations } from '@ant-design/x';
 import type { MessageInstance } from 'antd/es/message/interface';
 import { createStyles } from 'antd-style';
 import dayjs from 'dayjs';
 import locale from '@/locales/zh-CN';
+import { USER_AVATAR, LOGO_IMAGE } from '@/constants/chat';
 
 const useStyle = createStyles(({ token, css }) => ({
   side: css`
@@ -47,7 +48,7 @@ const useStyle = createStyles(({ token, css }) => ({
   `,
   sideFooter: css`
     border-top: 1px solid ${token.colorBorderSecondary};
-    height: 40px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -75,12 +76,40 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
 }) => {
   const { styles } = useStyle();
 
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameKey, setRenameKey] = useState<string>('');
+  const [renameValue, setRenameValue] = useState<string>('');
+
+  const renameTargetLabel = useMemo(() => {
+    return conversations.find((item) => item.key === renameKey)?.label ?? '';
+  }, [conversations, renameKey]);
+
+  const openRenameModal = (key: string) => {
+    const currentLabel = conversations.find((item) => item.key === key)?.label ?? '';
+    setRenameKey(key);
+    setRenameValue(currentLabel);
+    setRenameOpen(true);
+  };
+
+  const handleRenameOk = () => {
+    const nextLabel = renameValue.trim();
+    if (!nextLabel) {
+      messageApi.error('请输入名称');
+      return;
+    }
+
+    setConversations(
+      conversations.map((item) => (item.key === renameKey ? { ...item, label: nextLabel } : item)),
+    );
+    setRenameOpen(false);
+  };
+
   return (
     <div className={styles.side}>
       {/* Logo */}
       <div className={styles.logo}>
         <img
-          src="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*eco6RrQhxbMAAAAAAAAAAAAADgCCAQ/original"
+          src={LOGO_IMAGE}
           draggable={false}
           alt="logo"
           width={24}
@@ -122,6 +151,9 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
               label: locale.rename,
               key: 'rename',
               icon: <EditOutlined />,
+              onClick: () => {
+                openRenameModal(conversation.key as string);
+              },
             },
             {
               label: locale.delete,
@@ -141,9 +173,40 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
         })}
       />
 
+      {/* 重命名弹窗 */}
+      <Modal
+        title={locale.rename}
+        open={renameOpen}
+        okText="提交"
+        cancelText="取消"
+        onOk={handleRenameOk}
+        onCancel={() => setRenameOpen(false)}
+        afterClose={() => {
+          setRenameKey('');
+          setRenameValue('');
+        }}
+      >
+        <Input
+          autoFocus
+          value={renameValue}
+          placeholder="请输入名称"
+          onChange={(e) => setRenameValue(e.target.value)}
+          onPressEnter={handleRenameOk}
+          maxLength={50}
+          allowClear
+        />
+        {/* 用于避免用户看不到当前正在改哪个 */}
+        <Typography.Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
+          原名称：{renameTargetLabel || '-'}
+        </Typography.Text>
+      </Modal>
+
       {/* 底部 */}
       <div className={styles.sideFooter}>
-        <Avatar size={24} />
+        <div>
+          <Avatar src={USER_AVATAR} size={40} />
+          <Typography.Text>{locale.userName}</Typography.Text>
+        </div>
         <Button type="text" icon={<QuestionCircleOutlined />} />
       </div>
     </div>

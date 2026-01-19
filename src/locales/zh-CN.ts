@@ -4,6 +4,7 @@
 
 export default {
   // 通用
+  userName: 'Mr.Asuria',
   today: '今天',
   yesterday: '昨天',
   newConversation: '新对话',

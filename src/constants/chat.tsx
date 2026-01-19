@@ -185,3 +185,8 @@ export const THOUGHT_CHAIN_CONFIG = {
   },
 } as const;
 
+// 用户头像
+export const USER_AVATAR = 'https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp';
+
+//  logo 图片
+export const LOGO_IMAGE = 'https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*eco6RrQhxbMAAAAAAAAAAAAADgCCAQ/original';
