@@ -13,12 +13,28 @@ const useStyle = createStyles(({ token, css }) => ({
   sender: css`
     width: 100%;
     max-width: 840px;
+    
+    @media (max-width: 768px) {
+      max-width: 100%;
+    }
   `,
   senderPrompt: css`
     width: 100%;
     max-width: 840px;
     margin: 0 auto;
     color: ${token.colorText};
+    
+    @media (max-width: 768px) {
+      max-width: 100%;
+    }
+  `,
+  senderWrapper: css`
+    width: 100%;
+    margin-inline: 24px;
+    
+    @media (max-width: 768px) {
+      margin-inline: 12px;
+    }
   `,
 }));
 
@@ -44,7 +60,7 @@ export const ChatSender: React.FC<ChatSenderProps> = ({
       vertical
       gap={12}
       align="center"
-      style={{ marginInline: 24 }}
+      className={styles.senderWrapper}
     >
       {/* 提示词 */}
       <Prompts

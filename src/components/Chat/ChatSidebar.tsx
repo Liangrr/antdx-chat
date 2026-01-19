@@ -21,6 +21,11 @@ const useStyle = createStyles(({ token, css }) => ({
     flex-direction: column;
     padding: 0 12px;
     box-sizing: border-box;
+    
+    @media (max-width: 768px) {
+      width: 100%;
+      height: 100vh;
+    }
   `,
   logo: css`
     display: flex;
@@ -31,10 +36,19 @@ const useStyle = createStyles(({ token, css }) => ({
     gap: 8px;
     margin: 24px 0;
 
+    @media (max-width: 768px) {
+      padding: 0 16px;
+      margin: 16px 0;
+    }
+
     span {
       font-weight: bold;
       color: ${token.colorText};
       font-size: 16px;
+      
+      @media (max-width: 768px) {
+        font-size: 14px;
+      }
     }
   `,
   conversations: css`

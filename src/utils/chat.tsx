@@ -145,26 +145,38 @@ export const getRole = (
         },
         context,
       ),
-    contentRender: (content: string, { status }) => {
+    contentRender: (content: string, { status, key }) => {
       // NOTE: content 确认为 string，避免 any；并修正 replace 的正则写法
       const newContent = content.replace(/\n\n/g, '<br/><br/>');
       return (
-        <XMarkdown
-          paragraphTag="div"
-          components={{
-            think: ThinkRenderer,
-          }}
-          className={className}
-          streaming={{
-            hasNextChunk: status === 'updating',
-            enableAnimation: true,
-          }}
-        >
-          {newContent}
-        </XMarkdown>
+        <div data-message-id={String(key)}>
+          <XMarkdown
+            paragraphTag="div"
+            components={{
+              think: ThinkRenderer,
+            }}
+            className={className}
+            streaming={{
+              hasNextChunk: status === 'updating',
+              enableAnimation: true,
+            }}
+          >
+            {newContent}
+          </XMarkdown>
+        </div>
       );
     },
   },
-  user: { placement: 'end' },
+  user: {
+    placement: 'end',
+    // NOTE: 为用户消息添加 data-message-id 属性，用于导航定位
+    contentRender: (content: string, { key }) => {
+      return (
+        <div data-message-id={key as string}>
+          {content}
+        </div>
+      );
+    },
+  },
 });
 
