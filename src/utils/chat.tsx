@@ -3,7 +3,7 @@
  */
 
 // NOTE: 移除未使用的 React 导入（仅使用 JSX，不需要显式导入 React）
-import { message, Pagination } from 'antd';
+import { message } from 'antd';
 import { SyncOutlined } from '@ant-design/icons';
 import { Actions, ThoughtChain } from '@ant-design/x';
 import type { BubbleListProps, ThoughtChainItemProps } from '@ant-design/x';
@@ -64,10 +64,6 @@ const renderFooter = (
 ) => {
   const { id, content, extraInfo, status } = args;
   const Items = [
-    {
-      key: 'pagination',
-      actionRender: <Pagination simple total={1} pageSize={1} />,
-    },
     {
       key: 'retry',
       label: locale.retry,
