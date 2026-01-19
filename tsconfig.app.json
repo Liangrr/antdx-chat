@@ -5,7 +5,8 @@
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "types": ["vite/client"],
+    // NOTE: 显式 types 会“只包含”列出的类型包；补上 react/react-dom，避免 TS 提示找不到 react 类型
+    "types": ["vite/client", "react", "react-dom"],
     "skipLibCheck": true,
 
     /* Bundler mode */

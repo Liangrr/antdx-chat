@@ -27,6 +27,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDeleteSession,
   onRenameSession,
 }) => {
+  // NOTE: 避免在 render 过程中调用 Date.now()（React purity 规则），改为在 effect 中确定一次基准时间
+  const [now, setNow] = React.useState<number>(0);
+  React.useEffect(() => {
+    setNow(Date.now());
+  }, []);
+
   const getSessionMenu = (session: ChatSession) => ({
     items: [
       {
@@ -50,11 +56,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const yesterday: ChatSession[] = [];
     const earlier: ChatSession[] = [];
 
-    const now = Date.now();
+    // NOTE: 首次渲染 effect 未执行时，使用“会话更新时间”作为兜底基准，保证分组稳定且无副作用
+    const baseNow = now || sessions[0]?.updatedAt || 0;
     const oneDayMs = 24 * 60 * 60 * 1000;
 
     sessions.forEach((session) => {
-      const diff = now - session.updatedAt;
+      const diff = baseNow - session.updatedAt;
       if (diff < oneDayMs) {
         today.push(session);
       } else if (diff < oneDayMs * 2) {

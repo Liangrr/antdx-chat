@@ -55,13 +55,23 @@ const useStyle = createStyles(({ token, css }) => ({
   `,
 }));
 
+// NOTE: useXConversations 返回结构在不同版本 SDK 可能变化；这里用最小字段集保证类型安全和稳定性
+// label 设为可选，兼容 SDK 的 ConversationData 类型（可能没有 label）
+export interface ConversationItem {
+  key: string;
+  label?: string;
+  group?: string;
+  [k: string]: unknown;
+}
+
 interface ChatSidebarProps {
-  conversations: any[];
+  conversations: ConversationItem[];
   activeConversationKey: string;
   setActiveConversationKey: (key: string) => void;
-  addConversation: (item: any) => void;
-  setConversations: (items: any[]) => void;
-  messages: any[];
+  addConversation: (item: ConversationItem) => void;
+  setConversations: (items: ConversationItem[]) => void;
+  // NOTE: 这里只用到了 length，避免引入复杂的 SDK 类型依赖
+  messages: readonly unknown[];
   messageApi: MessageInstance;
 }
 
@@ -85,6 +95,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   }, [conversations, renameKey]);
 
   const openRenameModal = (key: string) => {
+    // NOTE: label 可能不存在，使用空字符串作为默认值
     const currentLabel = conversations.find((item) => item.key === key)?.label ?? '';
     setRenameKey(key);
     setRenameValue(currentLabel);
@@ -137,7 +148,8 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
         }}
         items={conversations.map(({ key, label, ...other }) => ({
           key,
-          label: key === activeConversationKey ? `[${locale.curConversation}]${label}` : label,
+          // NOTE: label 可能不存在，需要提供默认值
+          label: key === activeConversationKey ? `[${locale.curConversation}]${label ?? ''}` : (label ?? ''),
           ...other,
         }))}
         className={styles.conversations}
@@ -165,7 +177,8 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 const newKey = newList?.[0]?.key;
                 setConversations(newList);
                 if (conversation.key === activeConversationKey) {
-                  setActiveConversationKey(newKey);
+                  // NOTE: 删除最后一个会话时，保持原 key，避免传入 undefined
+                  if (newKey) setActiveConversationKey(newKey);
                 }
               },
             },

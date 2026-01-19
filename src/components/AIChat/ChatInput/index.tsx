@@ -5,6 +5,7 @@
 import React, { useState, useRef } from 'react';
 import type { KeyboardEvent } from 'react';
 import { Input, Button, Space, Tooltip } from 'antd';
+import type { TextAreaRef } from 'antd/es/input/TextArea';
 import {
   SendOutlined,
   PaperClipOutlined,
@@ -31,7 +32,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   maxLength = 2000,
 }) => {
   const [value, setValue] = useState('');
-  const textAreaRef = useRef<any>(null);
+  // NOTE: 避免 any，使用 antd TextAreaRef 获取更好的 TS 提示
+  const textAreaRef = useRef<TextAreaRef>(null);
 
   const handleSend = () => {
     if (!value.trim() || isLoading) return;

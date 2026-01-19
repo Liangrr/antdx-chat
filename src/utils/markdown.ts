@@ -5,7 +5,11 @@
 import { useState, useEffect } from 'react';
 
 export const useMarkdownTheme = () => {
-  const [theme, setTheme] = useState('light');
+  // NOTE: 初始主题用 lazy initializer 计算，避免在 effect 里同步 setState（react-hooks/set-state-in-effect）
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window === 'undefined') return 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
   
   useEffect(() => {
     // 监听系统主题变化
@@ -15,7 +19,6 @@ export const useMarkdownTheme = () => {
     };
     
     mediaQuery.addEventListener('change', handleChange);
-    setTheme(mediaQuery.matches ? 'dark' : 'light');
     
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);

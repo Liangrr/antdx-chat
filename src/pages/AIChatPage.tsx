@@ -19,6 +19,7 @@ import { DEFAULT_CONVERSATIONS_ITEMS, HOT_TOPICS, DESIGN_GUIDE } from '@/constan
 import { useMarkdownTheme } from '@/utils/markdown';
 import locale from '@/locales/zh-CN';
 import type { ChatMessage } from '@/types/chat';
+import { USER_AVATAR } from '@/constants/chat';
 
 // ==================== Style ====================
 const useStyle = createStyles(({ token, css }) => {
@@ -147,13 +148,13 @@ const AIChatPage: React.FC = () => {
           <Welcome
             style={{ width: '100%' }}
             variant="borderless"
-            icon="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp"
+            icon={USER_AVATAR}
             title={locale.welcome}
             description={locale.welcomeDescription}
           />
           <Flex gap={16} justify="center" style={{ width: '100%' }}>
             <Prompts
-              items={[HOT_TOPICS] as any}
+              items={[HOT_TOPICS]}
               styles={{
                 list: { height: '100%' },
                 item: {
@@ -168,7 +169,7 @@ const AIChatPage: React.FC = () => {
               className={styles.chatPrompt}
             />
             <Prompts
-              items={[DESIGN_GUIDE] as any}
+              items={[DESIGN_GUIDE]}
               styles={{
                 item: {
                   flex: 1,

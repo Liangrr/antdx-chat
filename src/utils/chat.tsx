@@ -2,10 +2,10 @@
  * 聊天工具函数
  */
 
-import React from 'react';
+// NOTE: 移除未使用的 React 导入（仅使用 JSX，不需要显式导入 React）
 import { message, Pagination } from 'antd';
 import { SyncOutlined } from '@ant-design/icons';
-import { Actions, ThoughtChain, Think } from '@ant-design/x';
+import { Actions, ThoughtChain } from '@ant-design/x';
 import type { BubbleListProps, ThoughtChainItemProps } from '@ant-design/x';
 import XMarkdown from '@ant-design/x-markdown';
 import { DeepSeekChatProvider, XRequest } from '@ant-design/x-sdk';
@@ -14,6 +14,7 @@ import type { DefaultMessageInfo, useXChat, SSEFields, XModelParams, XModelRespo
 import { HISTORY_MESSAGES, THOUGHT_CHAIN_CONFIG } from '@/constants/chat';
 import locale from '@/locales/zh-CN';
 import type { ChatMessage } from '@/types/chat';
+import { ThinkRenderer } from '@/components/Chat/ChatRenderers';
 
 // Provider 缓存
 const providerCaches = new Map<string, DeepSeekChatProvider>();
@@ -40,7 +41,8 @@ export const providerFactory = (conversationKey: string) => {
       }),
     );
   }
-  return providerCaches.get(conversationKey);
+  // NOTE: 缓存命中后必定存在
+  return providerCaches.get(conversationKey)!;
 };
 
 // 获取历史消息
@@ -48,36 +50,19 @@ export const historyMessageFactory = (conversationKey: string): DefaultMessageIn
   return HISTORY_MESSAGES[conversationKey] || [];
 };
 
-// Think 组件
-const ThinkComponent = React.memo((props: any) => {
-  const [title, setTitle] = React.useState(`${locale.deepThinking}...`);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    if (props.streamStatus === 'done') {
-      setTitle(locale.completeThinking);
-      setLoading(false);
-    }
-  }, [props.streamStatus]);
-
-  return (
-    <Think title={title} loading={loading}>
-      {props.children}
-    </Think>
-  );
-});
-
-// Footer 组件
-const Footer: React.FC<{
-  id?: string | number;
-  content: string;
-  status?: string;
-  extraInfo?: ChatMessage['extraInfo'];
+const renderFooter = (
+  args: {
+    id?: string | number;
+    content: string;
+    status?: string;
+    extraInfo?: ChatMessage['extraInfo'];
+  },
   context: {
     onReload?: ReturnType<typeof useXChat>['onReload'];
     setMessage?: ReturnType<typeof useXChat<ChatMessage>>['setMessage'];
-  };
-}> = ({ id, content, extraInfo, status, context }) => {
+  },
+) => {
+  const { id, content, extraInfo, status } = args;
   const Items = [
     {
       key: 'pagination',
@@ -163,22 +148,25 @@ export const getRole = (
         />
       ) : null;
     },
-    footer: (content, { status, key, extraInfo }) => (
-      <Footer
-        content={content}
-        status={status}
-        extraInfo={extraInfo as ChatMessage['extraInfo']}
-        id={key as string}
-        context={context}
-      />
-    ),
-    contentRender: (content: any, { status }) => {
-      const newContent = content.replace('/\n\n/g', '<br/><br/>');
+    footer: (content, { status, key, extraInfo }) =>
+      renderFooter(
+        {
+          content,
+          status,
+          // NOTE: antd/x 的 key 类型较宽，这里只在展示/回调时使用
+          id: key as string,
+          extraInfo: extraInfo as ChatMessage['extraInfo'],
+        },
+        context,
+      ),
+    contentRender: (content: string, { status }) => {
+      // NOTE: content 确认为 string，避免 any；并修正 replace 的正则写法
+      const newContent = content.replace(/\n\n/g, '<br/><br/>');
       return (
         <XMarkdown
           paragraphTag="div"
           components={{
-            think: ThinkComponent,
+            think: ThinkRenderer,
           }}
           className={className}
           streaming={{
