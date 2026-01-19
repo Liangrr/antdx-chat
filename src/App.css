@@ -30,6 +30,18 @@
 /* 移动端适配 */
 @media (max-width: 768px) {
   #root {
+    /* NOTE: iOS Safari 使用动态视口高度，避免地址栏和工具栏影响 */
     height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    overflow-x: hidden;
+    /* NOTE: iOS Safari 需要防止页面滚动 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100vw;
   }
 }

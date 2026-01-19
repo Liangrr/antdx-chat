@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- NOTE: 防止 iOS Safari 聚焦输入框时自动缩放 -->
+    <!-- 关键：输入框字体大小设置为至少 16px（在 CSS 中设置），这样 iOS Safari 就不会自动缩放 -->
+    <!-- 当输入框字体 >= 16px 时，iOS Safari 不会自动放大页面 -->
+    <!-- viewport-fit=cover 适配 iPhone X 等有安全区域的设备 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>antdx-demo</title>
   </head>
   <body>

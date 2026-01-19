@@ -18,6 +18,7 @@ import { ChatContext } from '@/contexts/ChatContext';
 import { providerFactory, historyMessageFactory, getRole } from '@/utils/chat';
 import { DEFAULT_CONVERSATIONS_ITEMS, HOT_TOPICS, DESIGN_GUIDE } from '@/constants/chat';
 import { useMarkdownTheme } from '@/utils/markdown';
+import { useDevice } from '@/hooks/useDevice';
 import locale from '@/locales/zh-CN';
 import type { ChatMessage } from '@/types/chat';
 import { USER_AVATAR } from '@/constants/chat';
@@ -28,37 +29,37 @@ const useStyle = createStyles(({ token, css }) => {
     layout: css`
       width: 100%;
       height: 100vh;
+      /* NOTE: iOS Safari 使用动态视口高度，避免地址栏和工具栏影响 */
+      height: 100dvh;
       display: flex;
       background: ${token.colorBgContainer};
       font-family: AlibabaPuHuiTi, ${token.fontFamily}, sans-serif;
       position: relative;
+      /* NOTE: iOS Safari 需要 overflow: hidden 来防止页面滚动 */
+      overflow: hidden;
+      /* NOTE: 防止横向滚动 */
+      overflow-x: hidden;
+      max-width: 100vw;
     `,
     mobileMenuBtn: css`
-      position: fixed;
-      top: 16px;
-      left: 16px;
-      z-index: 1000;
-      display: none;
-      
-      @media (max-width: 768px) {
-        display: block;
-      }
+      position: fixed !important;
+      top: 16px !important;
+      left: 16px !important;
+      z-index: 1001 !important;
+      display: block !important;
     `,
     mobileNavBtn: css`
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 1000;
-      display: none;
-      
-      @media (max-width: 768px) {
-        display: block;
-      }
+      position: fixed !important;
+      top: 16px !important;
+      right: 16px !important;
+      z-index: 1001 !important;
+      display: block !important;
     `,
     sidebar: css`
-      @media (max-width: 768px) {
-        display: none;
-      }
+      /* 默认显示 */
+    `,
+    sidebarHidden: css`
+      display: none;
     `,
     chat: css`
       height: 100%;
@@ -73,18 +74,29 @@ const useStyle = createStyles(({ token, css }) => {
         width: calc(100% - 280px);
       }
       
-      @media (max-width: 768px) {
-        width: 100%;
-        padding-block: ${token.paddingSM}px;
-        padding-top: 56px;
-      }
-      
       .ant-bubble-content-updating {
         background-image: linear-gradient(90deg, #ff6b23 0%, #af3cb8 31%, #53b6ff 89%);
         background-size: 100% 2px;
         background-repeat: no-repeat;
         background-position: bottom;
       }
+    `,
+    chatMobile: css`
+      width: 100%;
+      max-width: 100vw;
+      padding: 0;
+      padding-top: 56px;
+      padding-bottom: 0;
+      /* NOTE: 移动端使用固定布局，确保输入框始终可见 */
+      position: relative;
+      overflow: hidden;
+      overflow-x: hidden;
+      /* NOTE: iOS Safari 使用动态视口高度 */
+      height: 100dvh;
+      max-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
     `,
     chatPrompt: css`
       .ant-prompts-label {
@@ -104,32 +116,40 @@ const useStyle = createStyles(({ token, css }) => {
       flex-direction: column;
       align-items: center;
       width: 100%;
-
-      @media (max-width: 768px) {
-        height: calc(100% - 100px);
-      }
+      flex: 1;
+      min-height: 0;
+    `,
+    chatListMobile: css`
+      height: auto;
+      flex: 1;
+      min-height: 0;
+      max-height: calc(100dvh - 56px);
+      width: 100%;
+      max-width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      /* NOTE: 为固定定位的输入框预留空间（输入框高度约 120px + padding） */
+      padding-bottom: calc(120px + ${token.paddingSM}px * 2 + env(safe-area-inset-bottom, 0));
+      /* NOTE: iOS Safari 滚动优化 */
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      box-sizing: border-box;
     `,
     placeholder: css`
       padding-top: 32px;
       width: 100%;
       padding-inline: ${token.paddingLG}px;
       box-sizing: border-box;
-      
-      @media (max-width: 768px) {
-        padding-top: 16px;
-        padding-inline: ${token.paddingSM}px;
-      }
+    `,
+    placeholderMobile: css`
+      padding-top: 16px;
+      padding-inline: ${token.paddingSM}px;
     `,
     bubbleContainer: css`
       width: 100%;
       max-width: 840px;
       height: 100%;
       overflow-y: auto;
-      
-      @media (max-width: 768px) {
-        max-width: 100%;
-        padding-inline: ${token.paddingSM}px;
-      }
       
       /* NOTE: 消息高亮样式 - 用于导航跳转时的视觉反馈 */
       [data-message-id].message-highlight {
@@ -150,12 +170,54 @@ const useStyle = createStyles(({ token, css }) => {
         }
       }
     `,
+    bubbleContainerMobile: css`
+      max-width: 100%;
+      width: 100%;
+      padding-inline: ${token.paddingSM}px;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      /* NOTE: iOS Safari 滚动优化 */
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      box-sizing: border-box;
+      /* NOTE: 防止内容溢出导致横向滚动 */
+      word-wrap: break-word;
+      word-break: break-word;
+    `,
+    chatInputWrapper: css`
+      flex-shrink: 0;
+      width: 100%;
+      background: ${token.colorBgContainer};
+    `,
+    chatInputWrapperMobile: css`
+      /* NOTE: iOS Safari 使用 fixed 定位，确保输入框始终可见 */
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: ${token.paddingSM}px;
+      padding-bottom: calc(${token.paddingSM}px + env(safe-area-inset-bottom, 0));
+      background: ${token.colorBgContainer};
+      border-top: 1px solid ${token.colorBorderSecondary};
+      z-index: 1000;
+      /* NOTE: iOS Safari 需要明确的宽度和定位 */
+      width: 100%;
+      max-width: 100vw;
+      box-sizing: border-box;
+      /* NOTE: 防止输入框被键盘遮挡 */
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      /* NOTE: 防止横向滚动 */
+      overflow-x: hidden;
+    `,
   };
 });
 
 const AIChatPage: React.FC = () => {
   const { styles } = useStyle();
   const [className] = useMarkdownTheme();
+  const { isMobile, isIOS } = useDevice(); // NOTE: 使用设备检测 Hook，结合屏幕宽度和浏览器内核判断
   const [messageApi, contextHolder] = message.useMessage();
   const [inputValue, setInputValue] = useState('');
   // NOTE: 移动端侧边栏抽屉控制
@@ -230,10 +292,11 @@ const AIChatPage: React.FC = () => {
   };
 
   // 渲染聊天列表
+  const isMobileDevice = isMobile || isIOS; // NOTE: 统一使用移动端判断
   const chatList = (
-    <div className={styles.chatList}>
+    <div className={`${styles.chatList} ${isMobileDevice ? styles.chatListMobile : ''}`}>
       {messages?.length ? (
-        <div className={styles.bubbleContainer}>
+        <div className={`${styles.bubbleContainer} ${isMobileDevice ? styles.bubbleContainerMobile : ''}`}>
           <Bubble.List
             items={messages?.map((i) => ({
               ...i.message,
@@ -256,7 +319,7 @@ const AIChatPage: React.FC = () => {
           style={{ maxWidth: 840, width: '100%' }}
           gap={16}
           align="center"
-          className={styles.placeholder}
+          className={`${styles.placeholder} ${isMobileDevice ? styles.placeholderMobile : ''}`}
         >
           <Welcome
             style={{ width: '100%' }}
@@ -314,15 +377,19 @@ const AIChatPage: React.FC = () => {
         {contextHolder}
         <div className={styles.layout}>
           {/* 移动端菜单按钮 */}
-          <Button
-            type="primary"
-            icon={<MenuOutlined />}
-            className={styles.mobileMenuBtn}
-            onClick={() => setSidebarOpen(true)}
-          />
+          {/* NOTE: 使用 isMobile 或 isIOS 来确保 iOS Safari 能显示按钮 */}
+          {(isMobile || isIOS) && (
+            <Button
+              type="primary"
+              icon={<MenuOutlined />}
+              className={styles.mobileMenuBtn}
+              onClick={() => setSidebarOpen(true)}
+            />
+          )}
 
           {/* 移动端导航按钮 */}
-          {messages && messages.length > 0 && (
+          {/* NOTE: 使用 isMobile 或 isIOS 来确保 iOS Safari 能显示按钮 */}
+          {(isMobile || isIOS) && messages && messages.length > 0 && (
             <Button
               type="primary"
               icon={<UnorderedListOutlined />}
@@ -332,7 +399,8 @@ const AIChatPage: React.FC = () => {
           )}
 
           {/* 左侧边栏 - 桌面端 */}
-          <div className={styles.sidebar}>
+          {!isMobile && !isIOS && (
+            <div className={styles.sidebar}>
             <ChatSidebar
               conversations={conversations}
               activeConversationKey={activeConversationKey}
@@ -346,9 +414,11 @@ const AIChatPage: React.FC = () => {
               messageApi={messageApi}
             />
           </div>
+          )}
 
           {/* 移动端侧边栏抽屉 */}
-          <Drawer
+          {(isMobile || isIOS) && (
+            <Drawer
             title="会话列表"
             placement="left"
             onClose={() => setSidebarOpen(false)}
@@ -369,23 +439,26 @@ const AIChatPage: React.FC = () => {
               messageApi={messageApi}
             />
           </Drawer>
+          )}
 
           {/* 主聊天区域 */}
-          <div className={styles.chat}>
+          <div className={`${styles.chat} ${(isMobile || isIOS) ? styles.chatMobile : ''}`}>
             {chatList}
 
             {/* 输入框 */}
-            <ChatSender
-              inputValue={inputValue}
-              setInputValue={setInputValue}
-              onSubmit={onSubmit}
-              isRequesting={isRequesting}
-              abort={abort}
-            />
+            <div className={`${styles.chatInputWrapper} ${(isMobile || isIOS) ? styles.chatInputWrapperMobile : ''}`}>
+              <ChatSender
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                onSubmit={onSubmit}
+                isRequesting={isRequesting}
+                abort={abort}
+              />
+            </div>
           </div>
 
           {/* 右侧导航栏 - 桌面端 */}
-          {messages && messages.length > 0 && (
+          {!isMobile && !isIOS && messages && messages.length > 0 && (
             <ChatNavigation
               messages={messages.map((m) => ({
                 id: m.id,
@@ -398,7 +471,7 @@ const AIChatPage: React.FC = () => {
           )}
 
           {/* 移动端导航栏抽屉 */}
-          {messages && messages.length > 0 && (
+          {(isMobile || isIOS) && messages && messages.length > 0 && (
             <Drawer
               title="提问导航"
               placement="right"

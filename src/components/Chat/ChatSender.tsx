@@ -13,9 +13,24 @@ const useStyle = createStyles(({ token, css }) => ({
   sender: css`
     width: 100%;
     max-width: 840px;
+    box-sizing: border-box;
+    
+    /* NOTE: iOS Safari 防止自动缩放 - 确保输入框字体大小至少为 16px */
+    /* 如果字体小于 16px，iOS Safari 会在聚焦时自动放大页面 */
+    input,
+    textarea {
+      font-size: 16px !important;
+    }
     
     @media (max-width: 768px) {
       max-width: 100%;
+      width: 100%;
+      
+      /* NOTE: 移动端确保字体大小至少为 16px */
+      input,
+      textarea {
+        font-size: 16px !important;
+      }
     }
   `,
   senderPrompt: css`
@@ -23,17 +38,24 @@ const useStyle = createStyles(({ token, css }) => ({
     max-width: 840px;
     margin: 0 auto;
     color: ${token.colorText};
+    box-sizing: border-box;
     
     @media (max-width: 768px) {
       max-width: 100%;
+      width: 100%;
     }
   `,
   senderWrapper: css`
     width: 100%;
+    max-width: 100%;
     margin-inline: 24px;
+    box-sizing: border-box;
     
     @media (max-width: 768px) {
-      margin-inline: 12px;
+      margin-inline: 0;
+      width: 100%;
+      max-width: 100%;
+      padding-inline: 0;
     }
   `,
 }));
