@@ -8,10 +8,10 @@ const path = require('path');
 module.exports = {
   // 服务器配置
   server: {
-    host: '115.190.204.173',
+    host: '',
     port: 22,
     username: 'root',
-    password: 'Lrr1026@',
+    password: '',
   },
 
   // 路径配置
