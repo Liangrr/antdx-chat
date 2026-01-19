@@ -8,11 +8,9 @@ import { Input, Button, Space, Tooltip } from 'antd';
 import type { TextAreaRef } from 'antd/es/input/TextArea';
 import {
   SendOutlined,
-  PaperClipOutlined,
   RocketOutlined,
   FileTextOutlined,
   SafetyOutlined,
-  AudioOutlined,
 } from '@ant-design/icons';
 import './style.css';
 
@@ -87,11 +85,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
       <div className="chat-input-wrapper">
         <div className="chat-input-main">
-          <Button
-            type="text"
-            icon={<PaperClipOutlined />}
-            className="chat-input-attach"
-          />
           <TextArea
             ref={textAreaRef}
             value={value}
@@ -105,14 +98,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             bordered={false}
           />
           <div className="chat-input-actions">
-            <Tooltip title="语音输入">
-              <Button
-                type="text"
-                icon={<AudioOutlined />}
-                size="small"
-                className="chat-input-voice"
-              />
-            </Tooltip>
             <Button
               type="primary"
               icon={<SendOutlined />}

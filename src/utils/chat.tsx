@@ -85,16 +85,6 @@ const renderFooter = (
       actionRender: <Actions.Copy text={content} />,
     },
     {
-      key: 'audio',
-      actionRender: (
-        <Actions.Audio
-          onClick={() => {
-            message.info(locale.isMock);
-          }}
-        />
-      ),
-    },
-    {
       key: 'feedback',
       actionRender: (
         <Actions.Feedback

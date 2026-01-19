@@ -2,11 +2,10 @@
  * AI聊天页面 - 使用 Ant Design X
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { message, Flex } from 'antd';
-import { XProvider, Prompts, Welcome, Bubble, Attachments } from '@ant-design/x';
+import { XProvider, Prompts, Welcome, Bubble } from '@ant-design/x';
 import { useXChat, useXConversations } from '@ant-design/x-sdk';
-import type { GetProp } from 'antd';
 import { createStyles } from 'antd-style';
 import '@ant-design/x-markdown/themes/light.css';
 import '@ant-design/x-markdown/themes/dark.css';
@@ -78,8 +77,6 @@ const AIChatPage: React.FC = () => {
   const { styles } = useStyle();
   const [className] = useMarkdownTheme();
   const [messageApi, contextHolder] = message.useMessage();
-  const [attachmentsOpen, setAttachmentsOpen] = useState(false);
-  const [attachedFiles, setAttachedFiles] = useState<GetProp<typeof Attachments, 'items'>>([]);
   const [inputValue, setInputValue] = useState('');
 
   // 会话管理
@@ -94,11 +91,21 @@ const AIChatPage: React.FC = () => {
     defaultActiveConversationKey: DEFAULT_CONVERSATIONS_ITEMS[0].key,
   });
 
+  // NOTE: 使用 useMemo 确保 provider 在 activeConversationKey 变化时正确更新，避免消息混乱
+  const provider = useMemo(() => {
+    return providerFactory(activeConversationKey);
+  }, [activeConversationKey]);
+
+  // NOTE: 使用 useMemo 确保历史消息在 activeConversationKey 变化时正确更新
+  const defaultMessages = useMemo(() => {
+    return historyMessageFactory(activeConversationKey);
+  }, [activeConversationKey]);
+
   // 聊天功能
   const { onRequest, messages, isRequesting, abort, onReload, setMessage } = useXChat<ChatMessage>({
-    provider: providerFactory(activeConversationKey),
+    provider,
     conversationKey: activeConversationKey,
-    defaultMessages: historyMessageFactory(activeConversationKey),
+    defaultMessages,
     requestPlaceholder: () => ({
       content: locale.noData,
       role: 'assistant',
@@ -111,11 +118,11 @@ const AIChatPage: React.FC = () => {
 
   // 提交消息
   const onSubmit = (val: string) => {
-    if (!val) return;
+    if (!val.trim() || isRequesting) return;
+    // NOTE: onRequest 会自动合并当前会话的历史消息，只需传入新消息即可
     onRequest({
-      messages: [{ role: 'user', content: val }],
+      messages: [{ role: 'user', content: val.trim() }],
     });
-    setActiveConversationKey(activeConversationKey);
   };
 
   // 渲染聊天列表
@@ -215,10 +222,6 @@ const AIChatPage: React.FC = () => {
               onSubmit={onSubmit}
               isRequesting={isRequesting}
               abort={abort}
-              attachmentsOpen={attachmentsOpen}
-              setAttachmentsOpen={setAttachmentsOpen}
-              attachedFiles={attachedFiles}
-              setAttachedFiles={setAttachedFiles}
             />
           </div>
         </div>

@@ -31,11 +31,6 @@
   box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
 }
 
-.chat-input-attach {
-  flex-shrink: 0;
-  color: #8c8c8c;
-}
-
 .chat-input-textarea {
   flex: 1;
   min-width: 0;
@@ -57,10 +52,6 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-}
-
-.chat-input-voice {
-  color: #8c8c8c;
 }
 
 .chat-input-send {
