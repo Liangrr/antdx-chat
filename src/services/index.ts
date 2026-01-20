@@ -3,4 +3,5 @@
  */
 
 export * from './chatService';
+export { default as authService } from './authService';
 
